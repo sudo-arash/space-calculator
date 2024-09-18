@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Space Calculator</title>
+        <link
+            href="{{ url_for('static', filename='bootstrap.min.css') }}"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <div class="container mt-5">
+            <h1 class="text-center mb-4">Space Calculator</h1>
+
+            <!-- Tabs navigation -->
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button
+                        class="nav-link active"
+                        id="alignment-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#alignment"
+                        type="button"
+                        role="tab"
+                        aria-controls="alignment"
+                        aria-selected="true"
+                    >
+                        Planetary Alignment
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button
+                        class="nav-link"
+                        id="blackhole-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#blackhole"
+                        type="button"
+                        role="tab"
+                        aria-controls="blackhole"
+                        aria-selected="false"
+                    >
+                        Star as Black Hole
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab contents -->
+            <div class="tab-content mt-3" id="myTabContent">
+                <!-- Planetary Alignment Form -->
+                <div
+                    class="tab-pane fade show active"
+                    id="alignment"
+                    role="tabpanel"
+                    aria-labelledby="alignment-tab"
+                >
+                    <form method="POST" action="/calculate">
+                        <input
+                            type="hidden"
+                            name="query_type"
+                            value="alignment"
+                        />
+
+                        <div class="mb-3">
+                            <label for="planet1" class="form-label"
+                                >Planet 1</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="planet1"
+                                name="planet1"
+                                placeholder="Enter first planet (e.g., mars)"
+                                required
+                            />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="planet2" class="form-label"
+                                >Planet 2</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="planet2"
+                                name="planet2"
+                                placeholder="Enter second planet (e.g., earth)"
+                                required
+                            />
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="autoDate"
+                                name="auto_date"
+                            />
+                            <label class="form-check-label" for="autoDate">
+                                Calculate next alignment automatically (no date
+                                required)
+                            </label>
+                        </div>
+
+                        <div class="mb-3" id="date-input">
+                            <label for="date" class="form-label">Date</label>
+                            <input
+                                type="date"
+                                class="form-control"
+                                id="date"
+                                name="date"
+                            />
+                        </div>
+
+                        <!-- New input field for number of years to check -->
+                        <div
+                            class="mb-3"
+                            id="year-range-input"
+                            style="display: none"
+                        >
+                            <label for="years" class="form-label"
+                                >Number of Years to Check</label
+                            >
+                            <input
+                                type="number"
+                                class="form-control"
+                                id="years"
+                                name="years"
+                                min="1"
+                                value="5"
+                                required
+                            />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            Calculate Alignment
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Black Hole Schwarzschild Radius Form -->
+                <div
+                    class="tab-pane fade"
+                    id="blackhole"
+                    role="tabpanel"
+                    aria-labelledby="blackhole-tab"
+                >
+                    <form method="POST" action="/calculate">
+                        <input
+                            type="hidden"
+                            name="query_type"
+                            value="blackhole_sun"
+                        />
+
+                        <div class="form-check mb-3">
+                            <input
+                                class="form-check-input"
+                                type="radio"
+                                name="mass_option"
+                                id="choose_star"
+                                value="star"
+                                checked
+                            />
+                            <label class="form-check-label" for="choose_star">
+                                Choose a Star
+                            </label>
+                        </div>
+
+                        <div class="mb-3" id="star-select">
+                            <label for="star" class="form-label"
+                                >Select a Star</label
+                            >
+                            <select class="form-select" id="star" name="star">
+                                <option value="sun">Sun</option>
+                                <option value="sirius">Sirius</option>
+                                <option value="proxima_centauri">
+                                    Proxima Centauri
+                                </option>
+                                <option value="vega">Vega</option>
+                                <option value="betelgeuse">Betelgeuse</option>
+                            </select>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input
+                                class="form-check-input"
+                                type="radio"
+                                name="mass_option"
+                                id="enter_mass"
+                                value="mass"
+                            />
+                            <label class="form-check-label" for="enter_mass">
+                                Enter Mass Manually
+                            </label>
+                        </div>
+
+                        <div class="mb-3" id="mass-input" style="display: none">
+                            <label for="mass" class="form-label"
+                                >Mass of the Star (in Solar Masses)</label
+                            >
+                            <input
+                                type="number"
+                                class="form-control"
+                                id="mass"
+                                name="mass"
+                                min="0.1"
+                                step="0.01"
+                                placeholder="Enter mass in solar masses"
+                            />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            Calculate Schwarzschild Radius
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Display the result -->
+            {% if result %}
+            <div class="alert alert-info mt-4">{{ result }}</div>
+            {% endif %}
+        </div>
+        <script>
+            document
+                .getElementById("autoDate")
+                .addEventListener("change", function () {
+                    const dateInput = document.getElementById("date-input");
+                    const yearRangeInput =
+                        document.getElementById("year-range-input");
+                    if (this.checked) {
+                        dateInput.style.display = "none";
+                        yearRangeInput.style.display = "block";
+                    } else {
+                        dateInput.style.display = "block";
+                        yearRangeInput.style.display = "none";
+                    }
+                });
+            document
+                .getElementById("choose_star")
+                .addEventListener("change", function () {
+                    document.getElementById("star-select").style.display =
+                        "block";
+                    document.getElementById("mass-input").style.display =
+                        "none";
+                });
+
+            document
+                .getElementById("enter_mass")
+                .addEventListener("change", function () {
+                    document.getElementById("star-select").style.display =
+                        "none";
+                    document.getElementById("mass-input").style.display =
+                        "block";
+                });
+        </script>
+
+        <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+    </body>
+</html>
